@@ -62,19 +62,58 @@
         }
       }
 
-      #intro {
+      #main-title {
         font-size: clamp(2.5rem, 8vw, 5rem);
         font-weight: 900;
-        animation: fadeIn 1.5s forwards;
-        opacity: 0;
-        text-align: left;
-        width: 100%;
-        margin-bottom: 2rem;
         text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
         max-width: 100%;
         letter-spacing: 0.1em;
         color: var(--primary-color);
         z-index: 1;
+        margin-bottom: 1rem;
+        display: none; /* Initially hidden */
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+
+      #start-prompt {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-bottom: 2rem;
+        z-index: 1;
+        animation: fadeIn 1.5s forwards;
+      }
+
+      #intro-text {
+        font-size: clamp(2rem, 6vw, 4rem);
+        font-weight: 900;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
+        color: var(--primary-color);
+        letter-spacing: 0.1em;
+      }
+
+      #start-button {
+        background-color: var(--primary-color);
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      #start-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+
+      #start-button:active {
+        transform: scale(0.98);
       }
 
       #wish-container {
@@ -142,6 +181,33 @@
         }
       }
 
+      /* নতুন Pop/Fade Animation */
+      @keyframes popFadeIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        60% {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+          transform: scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+      }
+
       .confetti {
         position: fixed;
         font-size: 16px;
@@ -187,8 +253,13 @@
   </head>
   <body>
     <div class="background-image-container"></div>
+    
+    <h1 id="main-title">Happy Anniversary♡</h1>
 
-    <h1 id="intro">Happy Anniversary♡</h1>
+    <div id="start-prompt">
+      <h1 id="intro-text">Our Love Story Starts Here... ♡</h1>
+      <button id="start-button">Start</button>
+    </div>
 
     <div id="wish-container">
       <span class="typing-effect"></span>
@@ -212,11 +283,7 @@
         <span id="seconds"></span>
       </div>
     </div>
-    <audio
-      id="completeSound"
-      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
-      preload="auto"
-    ></audio>
+    
     <audio
       id="backgroundMusic"
       src="https://raw.githubusercontent.com/matrixo03a/First_Year_Anniversary/main/song.mp3"
@@ -228,46 +295,77 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const intro = document.getElementById("intro");
+        const mainTitle = document.getElementById("main-title");
+        const startPrompt = document.getElementById("start-prompt");
+        const startButton = document.getElementById("start-button");
         const wishContainer = document.getElementById("wish-container");
         const typingEffectElement = document.querySelector(".typing-effect");
-        const completeSound = document.getElementById("completeSound");
         const backgroundMusic = document.getElementById("backgroundMusic");
 
-        // Start background music immediately
+        let musicStarted = false;
+        let contentRevealed = false;
+
         function startBackgroundMusic() {
-          backgroundMusic.muted = false;
-          backgroundMusic.play().catch((e) => {
-            console.log("Background music autoplay failed:", e);
-            document.addEventListener(
-              "click",
-              () => {
-                backgroundMusic
-                  .play()
-                  .catch((err) => console.log("Music play failed:", err));
-              },
-              { once: true }
-            );
-          });
+          if (!musicStarted) {
+            backgroundMusic.muted = false;
+            backgroundMusic.play().catch((e) => {
+              console.log("Music play failed:", e);
+            });
+            musicStarted = true;
+          }
         }
 
-        // Start music immediately
-        startBackgroundMusic();
+        startButton.addEventListener("click", () => {
+          if (!contentRevealed) {
+            startBackgroundMusic();
+
+            // "Happy Anniversary" Pop/Fade animation
+            mainTitle.style.display = "block";
+            mainTitle.style.animation = "popFadeIn 1s forwards";
+
+            startPrompt.style.display = "none";
+
+            // 3 সেকেন্ড পরে Fade Out
+            setTimeout(() => {
+              mainTitle.style.animation = "fadeOut 1s forwards";
+
+              setTimeout(() => {
+                mainTitle.style.display = "none";
+
+                // Typing start
+                wishContainer.style.display = "block";
+                contentRevealed = true;
+
+                let i = 0;
+                const speed = 50;
+
+                function typeWriter() {
+                  if (i < message.length) {
+                    typingEffectElement.innerHTML += message.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                  }
+                }
+                typeWriter();
+              }, 1000); // fadeOut শেষ হওয়ার পরে
+            }, 3000); // 3 সেকেন্ড ধরে দেখানো
+          }
+        });
 
         const message = `
-            My Dearest 𝗦𝗨𝗠𝗔𝗜𝗬𝗔 ♡
+My Dearest 𝗦𝗨𝗠𝗔𝗜𝗬𝗔 ♡
 
-            Happy anniversary ♡ Thank you for choosing me and for giving me the most precious gift of all your love. This past year has been an incredible journey, and I feel so lucky to have you by my side through every moment.
+Happy anniversary ♡ Thank you for choosing me and for giving me the most precious gift of all your love. This past year has been an incredible journey, and I feel so lucky to have you by my side through every moment.
 
-            I know life will throw challenges our way, but I also know that as long as we face them together, we can overcome anything. Your support, your kindness, and your presence are all I need. With you, every problem feels manageable, and every victory feels sweeter.
+I know life will throw challenges our way, but I also know that as long as we face them together, we can overcome anything. Your support, your kindness, and your presence are all I need. With you, every problem feels manageable, and every victory feels sweeter.
 
-            This is just the first of many beautiful anniversaries. I don't want to just celebrate this year; I want to build a lifetime with you, a future of 70, 80, or more years filled with laughter, love, and unwavering companionship. All I ask is that you stay right here beside me.
+This is just the first of many beautiful anniversaries. I don't want to just celebrate this year; I want to build a lifetime with you, a future of 70, 80, or more years filled with laughter, love, and unwavering companionship. All I ask is that you stay right here beside me.
 
-            Thank you for everything, my love. Here’s to a future of us, together, always. ♡
+Thank you for everything, my love. Here’s to a future of us, together, always. ♡
 
-            Yours forever,
-            𝗦𝗛𝗜𝗧𝗢𝗟 ♡
-            `;
+Yours forever,
+𝗦𝗛𝗜𝗧𝗢𝗟 ♡
+        `;
 
         const startDate = new Date("August 14, 2024 17:50:00");
         const timerYears = document.getElementById("years");
@@ -280,20 +378,16 @@
         const flowerParticles = ["&#10045;", "&#10048;", "&#10047;"];
         const heartParticle = "♡";
 
-        let isTypingComplete = false;
         let particleCounter = 0;
 
         function updateTimer() {
-          // Get current time in Dhaka timezone (UTC+6)
           const now = new Date();
           const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
-          const dhakaTime = new Date(utcTime + 6 * 3600000); // UTC+6 for Dhaka
+          const dhakaTime = new Date(utcTime + 6 * 3600000);
 
-          // Calculate elapsed time
           const diff = dhakaTime - startDate;
 
           if (diff < 0) {
-            // If start date is in future, show zeros
             timerYears.textContent = "0";
             timerMonths.textContent = "0";
             timerDays.textContent = "0";
@@ -303,7 +397,6 @@
             return;
           }
 
-          // Calculate time components from start date to current date
           let startYear = startDate.getFullYear();
           let startMonth = startDate.getMonth();
           let startDay = startDate.getDate();
@@ -318,17 +411,13 @@
           let currentMin = dhakaTime.getMinutes();
           let currentSec = dhakaTime.getSeconds();
 
-          // Calculate elapsed years
           let years = currentYear - startYear;
-
-          // Calculate elapsed months
           let months = currentMonth - startMonth;
           if (months < 0) {
             years--;
             months += 12;
           }
 
-          // Calculate elapsed days
           let days = currentDay - startDay;
           if (days < 0) {
             months--;
@@ -336,33 +425,28 @@
               years--;
               months += 12;
             }
-            // Get days in previous month
             const prevMonth = new Date(currentYear, currentMonth, 0).getDate();
             days += prevMonth;
           }
 
-          // Calculate elapsed hours
           let hours = currentHour - startHour;
           if (hours < 0) {
             days--;
             hours += 24;
           }
 
-          // Calculate elapsed minutes
           let minutes = currentMin - startMin;
           if (minutes < 0) {
             hours--;
             minutes += 60;
           }
 
-          // Calculate elapsed seconds
           let seconds = currentSec - startSec;
           if (seconds < 0) {
             minutes--;
             seconds += 60;
           }
 
-          // Handle negative cascading
           if (minutes < 0) {
             hours--;
             minutes += 60;
@@ -385,14 +469,8 @@
           timerMonths.textContent = Math.max(0, months);
           timerDays.textContent = Math.max(0, days);
           timerHours.textContent = String(Math.max(0, hours)).padStart(2, "0");
-          timerMinutes.textContent = String(Math.max(0, minutes)).padStart(
-            2,
-            "0"
-          );
-          timerSeconds.textContent = String(Math.max(0, seconds)).padStart(
-            2,
-            "0"
-          );
+          timerMinutes.textContent = String(Math.max(0, minutes)).padStart(2, "0");
+          timerSeconds.textContent = String(Math.max(0, seconds)).padStart(2, "0");
         }
 
         function createConfetti() {
@@ -429,30 +507,6 @@
 
         updateTimer();
         setInterval(updateTimer, 1000);
-
-        setTimeout(() => {
-          intro.style.display = "none";
-          wishContainer.style.display = "block";
-          intro.style.zIndex = 0;
-
-          let i = 0;
-          const speed = 50;
-
-          function typeWriter() {
-            if (i < message.length) {
-              typingEffectElement.innerHTML += message.charAt(i);
-              i++;
-              setTimeout(typeWriter, speed);
-            } else {
-              isTypingComplete = true;
-              completeSound
-                .play()
-                .catch((e) => console.log("Audio playback failed:", e));
-              wishContainer.style.zIndex = 1;
-            }
-          }
-          typeWriter();
-        }, 3000);
       });
     </script>
   </body>
