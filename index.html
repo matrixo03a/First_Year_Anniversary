@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Happy Anniversary ♡</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding-top: 5vh;
+            padding-bottom: 80px;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            background-color: #000000;
+            color: var(--primary-color);
+            text-align: left;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .background-image-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image: url('https://i.ibb.co/xtHmKtWR/94c90cce7b5d6c0292730986895f23f8.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            animation: zoom-in-bg 45s ease-in-out infinite alternate;
+        }
+
+        @keyframes zoom-in-bg {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        #intro {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            animation: fadeIn 1.5s forwards;
+            opacity: 0;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
+            max-width: 100%;
+            letter-spacing: 0.1em;
+            color: var(--primary-color);
+            z-index: 1;
+        }
+
+        #wish-container {
+            display: none;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: 600;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            max-width: 100%;
+            text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+
+        #timer-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            color: var(--primary-color);
+            z-index: 2;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: clamp(0.7rem, 2vw, 1rem);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            opacity: 1;
+        }
+
+        .timer-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .timer-row span {
+            text-align: center;
+            min-width: 20px;
+        }
+        
+        #timer-labels span {
+            font-weight: 400;
+        }
+
+        #timer-values span {
+            font-weight: 600;
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .confetti {
+            position: fixed;
+            font-size: 16px;
+            line-height: 1;
+            top: -10px;
+            left: 0;
+            opacity: 0;
+            animation: confetti-fall 25s linear forwards;
+            pointer-events: none;
+            z-index: -1;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(1080deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes heart-fall {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image-container"></div>
+    
+    <h1 id="intro">Happy Anniversary♡</h1>
+    
+    <div id="wish-container">
+        <span class="typing-effect"></span>
+    </div>
+    
+    <div id="timer-container">
+        <div id="timer-labels" class="timer-row">
+            <span>Y</span>
+            <span>M</span>
+            <span>D</span>
+            <span>H</span>
+            <span>M</span>
+            <span>S</span>
+        </div>
+        <div id="timer-values" class="timer-row">
+            <span id="years"></span>
+            <span id="months"></span>
+            <span id="days"></span>
+            <span id="hours"></span>
+            <span id="minutes"></span>
+            <span id="seconds"></span>
+        </div>
+    </div>
+    <audio id="completeSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const intro = document.getElementById('intro');
+            const wishContainer = document.getElementById('wish-container');
+            const typingEffectElement = document.querySelector('.typing-effect');
+            const completeSound = document.getElementById('completeSound');
+
+            const message = `
+            My Dearest 𝗦𝗨𝗠𝗔𝗜𝗬𝗔 ♡
+
+            Happy anniversary ♡ Thank you for choosing me and for giving me the most precious gift of all your love. This past year has been an incredible journey, and I feel so lucky to have you by my side through every moment.
+
+            I know life will throw challenges our way, but I also know that as long as we face them together, we can overcome anything. Your support, your kindness, and your presence are all I need. With you, every problem feels manageable, and every victory feels sweeter.
+
+            This is just the first of many beautiful anniversaries. I don't want to just celebrate this year; I want to build a lifetime with you, a future of 70, 80, or more years filled with laughter, love, and unwavering companionship. All I ask is that you stay right here beside me.
+
+            Thank you for everything, my love. Here’s to a future of us, together, always. ♡
+
+            Yours forever,
+            𝗦𝗛𝗜𝗧𝗢𝗟 ♡
+            `;
+            
+            const startDate = new Date('August 14, 2024 17:50:00');
+            const timerYears = document.getElementById('years');
+            const timerMonths = document.getElementById('months');
+            const timerDays = document.getElementById('days');
+            const timerHours = document.getElementById('hours');
+            const timerMinutes = document.getElementById('minutes');
+            const timerSeconds = document.getElementById('seconds');
+
+            const flowerParticles = ['&#10045;', '&#10048;', '&#10047;'];
+            const heartParticle = '♡';
+
+            let isTypingComplete = false;
+            let particleCounter = 0;
+
+            function updateTimer() {
+                const now = new Date();
+                const diff = now - startDate;
+                
+                const seconds = Math.floor(diff / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                
+                const years = Math.floor(days / 365.25);
+                const months = Math.floor((days % 365.25) / 30.44);
+                const remainingDays = Math.floor(days % 30.44);
+                
+                const finalHours = String(hours % 24).padStart(2, '0');
+                const finalMinutes = String(minutes % 60).padStart(2, '0');
+                const finalSeconds = String(seconds % 60).padStart(2, '0');
+                
+                timerYears.textContent = years;
+                timerMonths.textContent = months;
+                timerDays.textContent = remainingDays;
+                timerHours.textContent = finalHours;
+                timerMinutes.textContent = finalMinutes;
+                timerSeconds.textContent = finalSeconds;
+            }
+
+            function createConfetti() {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.animationDelay = Math.random() * -20 + 's';
+                
+                let randomParticle;
+                if (particleCounter % 4 === 0) {
+                    randomParticle = heartParticle;
+                    confetti.style.animationName = 'heart-fall';
+                    confetti.style.fontWeight = 'normal';
+                } else {
+                    randomParticle = flowerParticles[Math.floor(Math.random() * flowerParticles.length)];
+                    confetti.style.fontWeight = 'bold';
+                    confetti.style.animationName = 'confetti-fall';
+                }
+                
+                confetti.innerHTML = randomParticle;
+                
+                document.body.appendChild(confetti);
+                particleCounter++;
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 25000);
+            }
+            
+            setInterval(createConfetti, 200);
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+
+            setTimeout(() => {
+                intro.style.display = 'none';
+                wishContainer.style.display = 'block';
+                intro.style.zIndex = 0;
+
+                let i = 0;
+                const speed = 50; 
+
+                function typeWriter() {
+                    if (i < message.length) {
+                        typingEffectElement.innerHTML += message.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, speed);
+                    } else {
+                        isTypingComplete = true;
+                        completeSound.play().catch(e => console.log('Audio playback failed:', e));
+                        wishContainer.style.zIndex = 1;
+                    }
+                }
+                typeWriter();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
